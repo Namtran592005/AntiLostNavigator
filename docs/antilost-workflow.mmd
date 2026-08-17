@@ -1,0 +1,23 @@
+flowchart LR
+    A[Chuẩn bị hành trình] --> B[Điện thoại lấy GPS]
+    B --> C{Độ chính xác đủ tốt?}
+    C -- Chưa --> B
+    C -- Có --> D[Lưu waypoint]
+    D --> E[Tiếp tục di chuyển]
+    E --> F{Có mạng?}
+    F -- Có --> G[Đồng bộ dữ liệu bản đồ khi cần]
+    F -- Không --> H[Dùng tile bản đồ offline]
+    H --> I[La bàn + DeviceMotion]
+    I --> J[Tính hướng và khoảng cách tới waypoint]
+    J --> K[Mũi tên báo hướng cần đi]
+    K --> L{Đã tới mốc?}
+    L -- Chưa --> E
+    L -- Rồi --> M[Thông báo đã đến]
+    M --> N[Chọn mốc tiếp theo hoặc lần theo breadcrumbs để quay về]
+
+    classDef action fill:#0f3d52,stroke:#57d6ff,color:#ffffff,stroke-width:2px;
+    classDef decision fill:#243b53,stroke:#ffd166,color:#ffffff,stroke-width:2px;
+    classDef result fill:#164e3b,stroke:#5eead4,color:#ffffff,stroke-width:2px;
+    class A,B,D,E,G,H,I,J,K,N action;
+    class C,F,L decision;
+    class M result;

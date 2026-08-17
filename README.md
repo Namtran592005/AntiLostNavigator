@@ -1,138 +1,135 @@
 # AntiLostNavigator
 
-> **Offline navigation for the moments when the trail disappears.**  
-> **Dẫn đường ngoại tuyến cho những lúc bạn cần tìm đường trở về.**
+> **Biết mình đang ở đâu. Biết mình cần đi hướng nào. Biết cách quay về.**
 
-AntiLostNavigator là ứng dụng Expo/React Native hỗ trợ định hướng ngoài trời bằng **GPS waypoint**, **la bàn bù nghiêng** và **bản đồ vệ tinh ngoại tuyến**. Ứng dụng được thiết kế cho trekking, dã ngoại và các hành trình có thể mất kết nối di động.
+AntiLostNavigator là ứng dụng hỗ trợ định hướng ngoài trời dành cho trekking, dã ngoại và những hành trình có nguy cơ mất kết nối di động. Ứng dụng giúp người dùng lưu lại các mốc quan trọng, xác định hướng đi tới từng mốc bằng GPS và la bàn, đồng thời tiếp tục xem bản đồ ngay cả khi không còn Internet.
 
-## Screenshots / Ảnh minh họa
+Ứng dụng không thay thế bản đồ địa hình, thiết bị cứu hộ hoặc kỹ năng sinh tồn. Mục tiêu của AntiLostNavigator là cung cấp một lớp hỗ trợ định hướng đơn giản, rõ ràng và hoạt động cục bộ trên điện thoại khi người dùng cần tìm đường trở lại.
 
-Các hình dưới đây là **preview minh họa giao diện** cho bản phát hành stable; giao diện thực tế có thể thay đổi nhẹ tùy kích thước màn hình và dữ liệu GPS.
+## AntiLostNavigator giúp người dùng như thế nào?
 
-| Navigation / Dẫn đường | Saved markers / Mốc đã lưu | Offline map / Bản đồ ngoại tuyến |
-|---|---|---|
-| ![Navigation preview](docs/screenshots/navigation-preview.png) | ![Markers preview](docs/screenshots/landmarks-preview.png) | ![Map preview](docs/screenshots/map-preview.png) |
+Khi đi vào khu vực xa khu dân cư, người dùng có thể mất sóng điện thoại, không mở được bản đồ trực tuyến hoặc khó nhớ chính xác đường đã đi. AntiLostNavigator giải quyết tình huống này bằng cách lưu các waypoint và breadcrumbs ngay trên thiết bị, sau đó dùng vị trí hiện tại để tính khoảng cách và phương hướng tới điểm cần đến.
 
-## Features / Tính năng
+![Luồng hoạt động của AntiLostNavigator](docs/antilost-workflow.png)
 
-### Navigation and compass
+### Một tình huống sử dụng điển hình
 
-- Hiển thị hướng tới waypoint bằng mũi tên điều hướng rõ ràng.
-- La bàn sử dụng **magnetometer** kết hợp **DeviceMotion** để bù góc nghiêng khi cầm điện thoại ở nhiều tư thế.
-- Áp dụng **magnetic declination** để cải thiện độ chính xác theo khu vực.
-- Hiển thị khoảng cách, phương vị, độ chính xác GPS và trạng thái cảm biến.
+Trước khi rời điểm xuất phát, người dùng mở ứng dụng và chờ GPS đạt độ chính xác phù hợp. Người dùng có thể lưu điểm xuất phát, nơi cắm trại, nguồn nước hoặc các điểm rẽ dưới dạng waypoint. Trong quá trình di chuyển, ứng dụng ghi nhận hành trình và giữ dữ liệu trong bộ nhớ cục bộ.
 
-### GPS waypoints
+Nếu mạng bị mất, bản đồ đã được bundle trong ứng dụng vẫn có thể hiển thị. Khi người dùng chọn một waypoint, ứng dụng tính bearing và khoảng cách từ vị trí hiện tại tới waypoint. La bàn kết hợp cảm biến từ trường với cảm biến chuyển động để bù góc nghiêng, giúp mũi tên định hướng hữu ích hơn khi điện thoại không được giữ hoàn toàn phẳng.
 
-- Theo dõi GPS liên tục trong lúc lấy vị trí mốc.
-- Chờ đến khi độ chính xác đạt ngưỡng tốt trước khi lưu, thay vì chỉ lấy trung bình một số mẫu cố định.
-- Lưu các mốc và breadcrumbs cục bộ bằng SQLite để có thể sử dụng khi không có mạng.
+| Vấn đề ngoài thực địa | Cách AntiLostNavigator hỗ trợ |
+|---|---|
+| Không có Internet | Dùng dữ liệu bản đồ offline đã được nhúng và cache cục bộ. |
+| Không nhớ đường quay về | Lưu waypoint và breadcrumbs để chọn lại các điểm đã đi qua. |
+| Không biết nên đi hướng nào | Tính bearing, khoảng cách và hiển thị hướng tới waypoint. |
+| GPS dao động | Theo dõi liên tục và chỉ lưu mốc khi độ chính xác đạt mức phù hợp. |
+| Cầm điện thoại bị nghiêng | Kết hợp Magnetometer và DeviceMotion để bù nghiêng la bàn. |
+| Muốn kiểm tra hành trình | Lưu dữ liệu cục bộ bằng SQLite để xem lại trong ứng dụng. |
 
-### Offline maps
+## Các chức năng chính
 
-- Bundle bản đồ cục bộ bao phủ Việt Nam ở các mức zoom chính.
-- Hỗ trợ lớp **satellite** và **street**.
-- Dùng cache cục bộ cho các mức zoom cao hơn khi thiết bị có dữ liệu bản đồ tương ứng.
-- Bộ tile được Metro bundler đóng gói thông qua `assets/tiles/bundleIndex.js` và cấu hình mở rộng trong `metro.config.js`.
+### Dẫn đường tới waypoint
 
-### UI and data
+Màn hình Dẫn đường hiển thị trạng thái GPS, độ chính xác vị trí, hướng hiện tại, hướng tới waypoint, khoảng cách và cảnh báo lệch hướng. Người dùng có thể chọn từng mốc trong danh sách và hủy dẫn đường bất kỳ lúc nào.
 
-- Giao diện dẫn đường dark theme tập trung vào khả năng đọc ngoài trời.
-- Các màn hình dữ liệu sử dụng light theme, bố cục rõ ràng và thao tác gọn.
-- Các khu vực chính gồm Navigation, Markers, Time và 2D Map.
+### Lưu mốc chính xác hơn
 
-## Tech stack
+Thay vì lấy một số ít mẫu GPS rồi lưu ngay, ứng dụng duy trì watcher trong thời gian ngắn để chờ vị trí ổn định. Khi đạt độ chính xác tốt, người dùng có thể lưu tên, ghi chú và ảnh của mốc. Các waypoint được lưu cục bộ để không phụ thuộc vào máy chủ bên ngoài.
+
+### Bản đồ offline
+
+Ứng dụng sử dụng bộ tile được bundle sẵn cho khu vực Việt Nam ở các mức zoom chính, hỗ trợ lớp bản đồ vệ tinh và đường phố. Bộ tile được Metro bundler quản lý thông qua `assets/tiles/bundleIndex.js`; các mức zoom cao hơn có thể sử dụng cache cục bộ khi dữ liệu đã tồn tại trên thiết bị.
+
+### Theo dõi thời gian và dữ liệu chuyến đi
+
+Màn hình Thời gian cung cấp thông tin giờ UTC, giờ địa phương và dữ liệu mặt trời để hỗ trợ người dùng ước lượng điều kiện ánh sáng trong hành trình. Breadcrumbs, waypoint và thông tin GPS được quản lý cục bộ bằng SQLite.
+
+## Công nghệ sử dụng
 
 | Thành phần | Công nghệ |
 |---|---|
-| Framework | Expo SDK 54 |
+| Framework | [Expo SDK 54](https://docs.expo.dev/) |
 | Runtime | React Native 0.81.5, React 19.1 |
-| Location | `expo-location` |
-| Sensors | `expo-sensors` — Magnetometer, DeviceMotion |
-| Local database | `expo-sqlite` |
-| File and tile cache | `expo-file-system` |
-| Graphics | `react-native-svg` |
-| Map renderer | Custom SVG-based offline renderer |
-| Target | Android-first; Expo development workflow |
+| Vị trí | `expo-location` |
+| Cảm biến | `expo-sensors` — Magnetometer và DeviceMotion |
+| Cơ sở dữ liệu cục bộ | `expo-sqlite` |
+| Lưu tile và file | `expo-file-system` |
+| Đồ họa | `react-native-svg` |
+| Bộ dựng bản đồ | Custom SVG-based offline map renderer |
+| Nền tảng mục tiêu | Android-first, Expo native workflow |
 
-## Requirements
+## Cài đặt và chạy thử
 
-- Node.js 20+ và npm hoặc pnpm.
-- Android Studio, Android SDK và JDK 17 nếu build native Android tại máy.
-- Thiết bị Android có GPS, magnetometer và accelerometer để kiểm tra đầy đủ tính năng.
-- Quyền truy cập vị trí khi dùng ứng dụng ngoài trời.
-
-## Getting started
+Yêu cầu Node.js 20 trở lên, JDK 17 và Android SDK nếu cần build native Android.
 
 ```bash
 npm install
 npx expo start
 ```
 
-Để chạy trên Android bằng native build:
+Để chạy native Android trên thiết bị hoặc emulator:
 
 ```bash
 npx expo run:android
 ```
 
-Có thể mở project bằng Expo Go cho các phần không yêu cầu native build đầy đủ; để kiểm thử GPS, cảm biến và bundle tile sát với bản phát hành, nên dùng development build hoặc APK native trên thiết bị thật.
+Để kiểm thử đúng GPS, cảm biến và bản đồ offline, nên dùng development build hoặc APK trên thiết bị Android thật. Expo Go phù hợp cho việc kiểm tra nhanh các phần giao diện và logic không phụ thuộc đầy đủ vào native build.
 
-## Release configuration
-
-Bản stable hiện tại:
-
-| Trường | Giá trị |
-|---|---|
-| App version | `1.0.0` |
-| Android version code | `1` |
-| Expo SDK | `54` |
-
-Thông tin version được quản lý trong `package.json` và `app.json`.
-
-## Project structure
-
-```text
-AntiLostNavigator/
-├── App.js                         # Application UI and navigation logic
-├── app.json                       # Expo app metadata and native permissions
-├── index.js                       # Expo entry point
-├── metro.config.js                # Tile asset extensions for Metro
-├── assets/
-│   └── tiles/                     # Bundled offline map tiles and index
-├── docs/screenshots/              # README UI preview images
-├── package.json                   # Scripts and dependencies
-└── README.md
-```
-
-## Sensor and privacy notes
-
-AntiLostNavigator is intended to work locally on the device. GPS coordinates, markers and breadcrumb data are stored locally for offline use. The app requests location access because navigation depends on the device's position; users should review Android permission prompts and avoid relying on the app as the only safety system during remote travel.
-
-Compass accuracy depends on the device's magnetometer, local magnetic interference and calibration. For best results, keep the phone away from metal objects and perform a gentle figure-eight calibration when the heading appears unstable.
-
-## Building a release APK
-
-For a local Android build, make sure the Android SDK and JDK 17 are configured, then run:
+## Build bản release
 
 ```bash
 npx expo prebuild --platform android
 npx expo run:android --variant release
 ```
 
-Generated native folders and build outputs are intentionally excluded from Git through `.gitignore`. Keep release binaries in a separate release storage location rather than committing them to the source repository.
+Các thư mục native sinh tự động và file build không được commit vào repository. APK/AAB nên được lưu ở kênh phát hành riêng như GitHub Releases.
 
-## Contributing
+## Cấu trúc project
 
-Issues and pull requests are welcome. Before opening a pull request, test the changes on a real Android device with location and sensor permissions enabled, and describe whether the test used online or fully offline map data.
+```text
+AntiLostNavigator/
+├── App.js                         # Logic, màn hình và style chính
+├── app.json                       # Metadata Expo và native permissions
+├── index.js                       # Entry point
+├── metro.config.js                # Cấu hình asset tile cho Metro
+├── assets/
+│   └── tiles/                     # Tile bản đồ offline đã bundle
+├── docs/
+│   ├── antilost-workflow.mmd      # Source của biểu đồ hoạt động
+│   └── antilost-workflow.png      # Biểu đồ dùng trong README
+├── package.json
+└── README.md
+```
+
+## Độ chính xác và an toàn khi sử dụng
+
+Độ chính xác GPS phụ thuộc vào thiết bị, điều kiện bầu trời, môi trường và chất lượng tín hiệu. La bàn có thể bị ảnh hưởng bởi kim loại, nam châm, loa hoặc thiết bị điện tử gần điện thoại. Khi hướng hiển thị không ổn định, hãy di chuyển khỏi nguồn nhiễu và hiệu chỉnh cảm biến bằng chuyển động hình số tám.
+
+Không nên chỉ dựa vào AntiLostNavigator trong các chuyến đi nguy hiểm. Người dùng nên mang theo bản đồ dự phòng, pin dự phòng, đèn, nước, thiết bị liên lạc và thông báo lịch trình cho người khác trước khi khởi hành.
+
+## Quyền riêng tư
+
+GPS, waypoint, breadcrumbs và dữ liệu chuyến đi được lưu cục bộ trên thiết bị để hỗ trợ hoạt động offline. Ứng dụng cần quyền vị trí vì đây là dữ liệu cốt lõi của chức năng dẫn đường. Người dùng nên xem lại các quyền Android trước khi sử dụng.
+
+## Phiên bản stable
+
+| Trường | Giá trị |
+|---|---|
+| App version | `1.0.0` |
+| Android version code | `1` |
+| iOS build number | `1` |
+| Expo SDK | `54` |
+
+## Đóng góp
+
+Issue và pull request được hoan nghênh. Khi báo lỗi, hãy mô tả thiết bị, phiên bản Android, trạng thái kết nối mạng, độ chính xác GPS và liệu lỗi có xảy ra trong chế độ bản đồ offline hay không.
 
 ## License
 
-No open-source license has been selected yet. Until a license file is added, all rights are reserved by the project owner.
+Project chưa chọn giấy phép mã nguồn mở. Cho đến khi thêm file license, mọi quyền thuộc về chủ sở hữu project.
 
----
+## References
 
-## Tiếng Việt
-
-AntiLostNavigator là một ứng dụng dẫn đường **không phụ thuộc hoàn toàn vào Internet**, phù hợp cho trekking, dã ngoại và các tình huống cần quay lại theo các mốc đã lưu. Ứng dụng kết hợp GPS, cảm biến từ trường, cảm biến chuyển động và dữ liệu tile bản đồ được nhúng sẵn.
-
-Bản phát hành chính thức hiện tại là **1.0.0 Stable**. Khi phát hành, nên kiểm tra trên thiết bị thật vì chất lượng la bàn và GPS phụ thuộc vào phần cứng, môi trường nhiễu từ và điều kiện bầu trời.
+- [1] [Expo Documentation](https://docs.expo.dev/) — Tài liệu chính thức của Expo.
+- [2] [React Native Documentation](https://reactnative.dev/docs/getting-started) — Tài liệu chính thức của React Native.
